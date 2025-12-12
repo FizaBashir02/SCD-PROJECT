@@ -1,0 +1,48 @@
+/* AUDIO RECORDER
+let mediaRecorder, audioChunks = [], audioBlob;
+const recBtn = document.getElementById('rec-btn');
+const stopBtn = document.getElementById('stop-btn');
+const playbackBtn = document.getElementById('playback-btn');
+const exportBtn = document.getElementById('export-btn');
+const timerDisplay = document.getElementById('rec-timer');
+let seconds = 0, timerInterval;
+
+recBtn.addEventListener('click', async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  mediaRecorder = new MediaRecorder(stream);
+  audioChunks = [];
+  mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+  mediaRecorder.start();
+  timerInterval = setInterval(() => {
+    seconds++;
+    let m = String(Math.floor(seconds/60)).padStart(2,'0');
+    let s = String(seconds%60).padStart(2,'0');
+    timerDisplay.textContent = `${m}:${s}`;
+  }, 1000);
+});
+
+stopBtn.addEventListener('click', () => {
+  if (!mediaRecorder) return;
+  mediaRecorder.stop();
+  mediaRecorder.onstop = () => {
+    audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+  };
+  clearInterval(timerInterval);
+  seconds = 0;
+  timerDisplay.textContent = "00:00";
+});
+
+playbackBtn.addEventListener('click', () => {
+  if (!audioBlob) return;
+  const audio = new Audio(URL.createObjectURL(audioBlob));
+  audio.play();
+});
+
+exportBtn.addEventListener('click', () => {
+  if (!audioBlob) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(audioBlob);
+  a.download = 'recording.webm';
+  a.click();
+});
+*/
